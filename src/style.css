@@ -18,33 +18,29 @@ body {
 }
 
 .side-block {
-    background-color: rgb(50, 53, 67);
+    background-color: rgb(35, 44, 57);
     color: white;
     padding: var(--block-padding);
 
     display: grid;
-    grid-template: min-content 1fr / 1fr;
+    grid-template: min-content min-content 1fr / 1fr;
+    gap: 24px;
 }
 
-.header {
+.app-name {
     display: flex;
     justify-content: flex-start;
     align-items: center;
     gap: 1ch;
 
-    margin-bottom: 30px;
+    margin-bottom: 10px;
 
     & h1 {
         margin: 0;
     }
 }
 
-.projects {
-    & h2 {
-        text-decoration: underline;
-    }
-}
-
+.special-list,
 .project-list {
     margin: 0;
     padding: 0;
@@ -55,6 +51,7 @@ body {
     gap: 15px;
 }
 
+.special-button,
 .project-button {
     padding: 0;
     border: none;
@@ -63,22 +60,71 @@ body {
 
     font-size: 1.3em;
 
-    &::before {
-        content: '- ';
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+
+    &:hover {
+        cursor: pointer;
     }
 }
 
+.selected {
+    color: rgb(255, 111, 21);
+}
+
 .main-block {
-    background-color: rgb(59, 63, 79);
+    background-color: rgb(55, 66, 82);
     color: white;
-    padding: var(--block-padding);
 
     display: grid;
     grid-template: 1fr min-content / 1fr;
 }
 
+.header {
+    background-color: rgb(40, 50, 63);
+    padding: 35px 40px;
+    display: flex;
+    align-items: center; 
+}
+
 .project-name {
-    margin-top: 0;
+    margin: 0;
+}
+
+.todo-list {
+    list-style-type: none; 
+    box-sizing: border-box;
+    margin: 0;
+    padding: var(--block-padding); 
+
+    display: grid;
+    grid-template: 1fr / 1fr; 
+    gap: 16px;
+}
+
+.todo-card {
+    height: 30px;
+    padding: 10px;
+    background-color: rgb(76, 90, 108);
+    border-radius: 10px;
+    box-shadow: 2px 2px 5px rgb(40, 50, 63);
+
+    display: grid;
+    grid-template: 1fr / min-content max-content 1fr min-content;
+    align-items: center;
+    gap: 24px;
+}
+
+.todo-options {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .footer {
@@ -87,8 +133,7 @@ body {
     align-items: center;
     gap: 0.5ch;
 
-    padding: var(--block-padding);
-    padding-bottom: 0px;
+    padding: 10px;
 
     & a {
         color: inherit;
