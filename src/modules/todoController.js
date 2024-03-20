@@ -2,28 +2,22 @@ import Project from "./project.js";
 
 export default class TodoController {
     constructor() {
-        this.projects = [];
+        this.projects = {};
     }
 
     addProject(name) {
         const newProject = new Project(name);
-        this.projects.push(newProject);
+        this.projects[name] = newProject;
         return newProject;
     }
 
     getProject(projectName) {
-        return this.projects.find((project) => project.name === projectName);
+        return this.projects[projectName];
     }
 
     deleteProject(projectName) {
-        let deletedProject = null;
-        this.projects = this.projects.filter(project => {
-            if (project.name === projectName) {
-                deletedProject = project;
-                return false;
-            }
-            return true;
-        });
+        let deletedProject = this.getProject(projectName);
+        delete this.projects[projectName];
         return deletedProject;
     }
 }

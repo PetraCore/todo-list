@@ -3,28 +3,22 @@ import Todo from './todo.js';
 export default class Project {
     constructor(name) {
         this.name = name;
-        this.todoList = [];
+        this.todos = {};
     }
 
     addTodo(title, description, dueDate, priority) {
         const newTodo = new Todo(title, description, dueDate, priority);
-        this.todoList.push(newTodo);
+        this.todos[title] = newTodo;
         return newTodo;
     }
 
     getTodo(todoTitle) {
-        return this.todoList.find((todo) => todo.title === todoTitle);
+        return this.todos[todoTitle];
     }
 
     deleteTodo(todoTitle) {
-        let deletedTodo = null;
-        this.todoList = this.todoList.filter(todo => {
-            if(todo.title === todoTitle) {
-                deletedTodo = todo;
-                return false;
-            }
-            return true;
-        });
+        let deletedTodo = this.getTodo(todoTitle);
+        delete this.todos[todoTitle];
         return deletedTodo;
     }
 }
