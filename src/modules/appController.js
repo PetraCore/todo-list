@@ -25,7 +25,16 @@ export default class AppController {
         const projectsContainer = document.querySelector('#projectsContainer');
         const projects = AppController.convertObjectToArray(this.#todoController.projects);
         const projectListElement = this.#domController.createProjectListElement(projects, this.#selectedProject);
+
         projectsContainer.appendChild(projectListElement);
+    }
+
+    loadTodos(project = this.#selectedProject) {
+        const todosContainer = document.querySelector('#todosContainer');
+        const todos = AppController.convertObjectToArray(project.todos);
+        const todoListElement = this.#domController.createTodoListElement(todos);
+
+        todosContainer.appendChild(todoListElement);
     }
 
     loadSampleData() {
@@ -33,13 +42,14 @@ export default class AppController {
         const programming = this.#todoController.addProject('Programming');
         const sport = this.#todoController.addProject('Sport');
 
-        chores.addTodo('Buy groceries', 'pierogies, 1 jar of pickles, 2 loafs of bread, 2 sticks of butter', 'tomorrow', 1);
-        chores.addTodo('Vacuum the apartment', '', 'today', 2);
+        chores.addTodo('Buy groceries', 'pierogies, 1 jar of pickles, 2 loafs of bread, 2 sticks of butter', 'Tomorrow', 1);
+        chores.addTodo('Vacuum the apartment', '', 'Today', 2);
 
-        programming.addTodo('Create Todo app', '', 'yesterday', 3);
-        programming.addTodo('Finish TOP curriculum', 'Someday...', '', 3);
+        programming.addTodo('Procrastinate', 'The key to success! (... not really)', 'Today', 3).complete();
+        programming.addTodo('Create Todo app', '', 'Yesterday', 1);
+        programming.addTodo('Finish TOP curriculum', 'Someday...', '', 2);
 
-        sport.addTodo('Run 3km', 'I hate running but it keeps me feet', 'saturday', 2);
+        sport.addTodo('Run 3km', 'I hate running but it keeps me feet', 'Saturday', 2);
 
         this.#selectedProject = programming;
     }
@@ -47,5 +57,6 @@ export default class AppController {
     initializeApp() {
         this.loadSampleData();
         this.loadProjects();
+        this.loadTodos();
     }
 }

@@ -4,12 +4,12 @@ export default class Todo {
         this.description = description;
         this.dueDate = dueDate;
         this.priority = priority;
-        this.completion = false;
+        this.isCompleted = false;
         this.completionDate = null; 
     }
 
     complete() {
-        this.completion = true;
+        this.isCompleted = true;
         this.completionDate = 'WIP';
     }
 }
