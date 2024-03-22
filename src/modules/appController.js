@@ -31,9 +31,13 @@ export default class AppController {
 
     loadTodos(project = this.#selectedProject) {
         const todosContainer = document.querySelector('#todosContainer');
+
+        const todoListHeaderElement = this.#domController.createTodoListHeaderElement(project);
+
         const todos = AppController.convertObjectToArray(project.todos);
         const todoListElement = this.#domController.createTodoListElement(todos);
 
+        todosContainer.appendChild(todoListHeaderElement);
         todosContainer.appendChild(todoListElement);
     }
 
