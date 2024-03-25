@@ -12,21 +12,72 @@ export default class AppController {
     #domController = new DOMController();
     #selectedProject = null;
 
+    // Internal tools
+
     static convertObjectToArray(object) {
         const OBJECT_INDEX = 1;
         return Object.entries(object).map((entry) => entry[OBJECT_INDEX]);  
+    }
+
+    // Projects
+
+    selectProject(project) {
+        if(typeof project !== 'object' && typeof project !== 'string') {
+            return;
+        }
+
+        if (typeof project === 'string') {
+            project = this.#todoController.getProject(project);
+        }
+
+        this.#selectedProject = project;
+        this.#domController.selectProjectElement(project);
+        this.reloadTodos(project);
     }
 
     addProject(name) {
         this.#todoController.addProject(name);
     }
 
+    activateProjectsButtons() {
+        const projectsContainer = document.querySelector('#projectsContainer');
+        const projectButtons = projectsContainer.querySelectorAll('.project-button');
+
+        projectButtons.forEach(projectButton => {
+            const projectName = projectButton.querySelector('.project-name').textContent;
+            projectButton.addEventListener('click', this.selectProject.bind(this, projectName));
+        });
+    }
+    
+    unloadProjects() {
+        const projectsContainer = document.querySelector('#projectsContainer');
+        projectsContainer.innerHTML = '';
+    }
+
     loadProjects() {
         const projectsContainer = document.querySelector('#projectsContainer');
+
+        const projectListHeaderElement = this.#domController.createProjectListHeaderElement();
+
         const projects = AppController.convertObjectToArray(this.#todoController.projects);
         const projectListElement = this.#domController.createProjectListElement(projects, this.#selectedProject);
 
+        projectsContainer.appendChild(projectListHeaderElement);
         projectsContainer.appendChild(projectListElement);
+
+        this.activateProjectsButtons();
+    }
+
+    reloadProjects() {
+        this.clearProjects();
+        this.loadProjects();
+    }
+
+    // Todos
+
+    unloadTodos() {
+        const todosContainer = document.querySelector('#todosContainer');
+        todosContainer.innerHTML = '';
     }
 
     loadTodos(project = this.#selectedProject) {
@@ -40,6 +91,13 @@ export default class AppController {
         todosContainer.appendChild(todoListHeaderElement);
         todosContainer.appendChild(todoListElement);
     }
+
+    reloadTodos(project = this.#selectedProject) {
+        this.unloadTodos();
+        this.loadTodos(project);
+    }
+
+    // App miscellaneous
 
     loadSampleData() {
         const chores = this.#todoController.addProject('Chores');
