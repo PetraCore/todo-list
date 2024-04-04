@@ -10,6 +10,7 @@ import DOMController from "./DOMController";
 export default class AppController {
     #todoController = new TodoController();
     #domController = new DOMController();
+    #projectsContainer = document.querySelector('#projectsContainer')
     #selectedProject = null;
 
     // Internal tools
@@ -31,65 +32,108 @@ export default class AppController {
         }
 
         this.#selectedProject = project;
-        this.#domController.selectProjectElement(project);
+        this.#domController.selectProject(project);
         this.reloadTodos(project);
     }
 
     addProject(name) {
-        this.#todoController.addProject(name);
+        if(this.#todoController.getProject(name)) {
+            return;
+        }
+        const newProject = this.#todoController.addProject(name);
+        this.loadProject(newProject);
     }
 
-    activateProjectsButtons() {
-        const projectsContainer = document.querySelector('#projectsContainer');
-        const projectButtons = projectsContainer.querySelectorAll('.project-button');
+    createProjectCreator() {
+        const CREATOR_ID = 'projectCreator';
 
-        projectButtons.forEach(projectButton => {
-            const projectName = projectButton.querySelector('.project-name').textContent;
-            projectButton.addEventListener('click', this.selectProject.bind(this, projectName));
+        const projectCreator = this.#domController.createCreatorTemplate
+        (CREATOR_ID, 'Create a new project');
+        const creatorContent = projectCreator.querySelector(`#${CREATOR_ID}Content`);
+
+        const projectNameField = this.#domController.createCreatorField
+        ('text', 'projectName', 'Name:');
+        creatorContent.appendChild(projectNameField);
+
+        const createOption = projectCreator.querySelector(`#${CREATOR_ID}Create`);
+        createOption.addEventListener('click', (event) => {
+            event.preventDefault();
+            const projectName = projectNameField.querySelector('#projectNameInput').value;
+            this.addProject(projectName);
+            projectCreator.close();
+        });
+
+        return projectCreator;
+    }
+
+    openProjectCreator() {
+        const projectCreator = document.querySelector('#projectCreator');
+        projectCreator.showModal();
+    }
+
+    activateProject(projectItem) {
+        const projectButton = projectItem.querySelector('.project-button');
+        const projectName = projectButton.querySelector('.project-name').textContent;
+        projectButton.addEventListener('click', this.selectProject.bind(this, projectName));
+    }
+
+    activateProjects() {
+        const addProjectButton = this.#projectsContainer.querySelector('#addProjectButton');
+        const projectItems = this.#projectsContainer.querySelectorAll('.project-item');
+
+        addProjectButton.addEventListener('click', this.openProjectCreator)
+
+        projectItems.forEach(projectItem => {
+            this.activateProject(projectItem);
         });
     }
-    
-    unloadProjects() {
-        const projectsContainer = document.querySelector('#projectsContainer');
-        projectsContainer.innerHTML = '';
+
+    loadProject(project) {
+        const newProjectItem = this.#domController.createProjectListItem(project);
+        this.#projectsContainer.querySelector('#projectListContainer').appendChild(newProjectItem);
+        this.activateProject(newProjectItem);
     }
 
     loadProjects() {
-        const projectsContainer = document.querySelector('#projectsContainer');
-
-        const projectListHeaderElement = this.#domController.createProjectListHeaderElement();
+        const projectCreator = this.createProjectCreator();
+        const projectListHeader = this.#domController.createProjectListHeader();
 
         const projects = AppController.convertObjectToArray(this.#todoController.projects);
-        const projectListElement = this.#domController.createProjectListElement(projects, this.#selectedProject);
+        const projectList = this.#domController.createProjectList(projects, this.#selectedProject);
 
-        projectsContainer.appendChild(projectListHeaderElement);
-        projectsContainer.appendChild(projectListElement);
+        this.#projectsContainer.appendChild(projectCreator);
+        this.#projectsContainer.appendChild(projectListHeader);
+        this.#projectsContainer.appendChild(projectList);
 
-        this.activateProjectsButtons();
+        this.activateProjects();
+    }
+
+    unloadProjects() {
+        this.#projectsContainer.innerHTML = '';
     }
 
     reloadProjects() {
-        this.clearProjects();
+        this.unloadProjects();
         this.loadProjects();
     }
 
     // Todos
 
-    unloadTodos() {
-        const todosContainer = document.querySelector('#todosContainer');
-        todosContainer.innerHTML = '';
-    }
-
     loadTodos(project = this.#selectedProject) {
         const todosContainer = document.querySelector('#todosContainer');
 
-        const todoListHeaderElement = this.#domController.createTodoListHeaderElement(project);
+        const todoListHeader = this.#domController.createTodoListHeader(project);
 
         const todos = AppController.convertObjectToArray(project.todos);
-        const todoListElement = this.#domController.createTodoListElement(todos);
+        const todoList = this.#domController.createTodoList(todos);
 
-        todosContainer.appendChild(todoListHeaderElement);
-        todosContainer.appendChild(todoListElement);
+        todosContainer.appendChild(todoListHeader);
+        todosContainer.appendChild(todoList);
+    }
+
+    unloadTodos() {
+        const todosContainer = document.querySelector('#todosContainer');
+        todosContainer.innerHTML = '';
     }
 
     reloadTodos(project = this.#selectedProject) {

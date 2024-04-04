@@ -9,7 +9,7 @@ export default class DOMController {
     #todoOptionRemoveSVG = '<svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24"><path fill="white" d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6z"/></svg>';
     #todoOptionEditSVG = '<svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24"><path fill="white" d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83l3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75z"/></svg>';
 
-    createProjectListHeaderElement(id = 'projectListHeaderContainer') {
+    createProjectListHeader(id = 'projectListHeaderContainer') {
         const projectListHeaderContainer = document.createElement('h2');
         projectListHeaderContainer.id = id;
         projectListHeaderContainer.classList.add('option-container');
@@ -17,7 +17,7 @@ export default class DOMController {
         projectListHeaderContainer.innerHTML = `
             <span>Projects</span> 
             <ul class="options">
-                <li class="option" id="addProjectBtn">
+                <li class="option" id="addProjectButton">
                     ${this.#projectOptionAddSVG}
                 </li>
             </ul> 
@@ -26,32 +26,42 @@ export default class DOMController {
         return projectListHeaderContainer;
     }
 
-    createProjectListElement(projects = [], selectedProject = null, id = 'projectListContainer') {
+    createProjectListItem(project, isSelected = false) {
+        const projectListItem = document.createElement('li');
+        projectListItem.dataset.id = project.name;
+
+        projectListItem.classList.add('project-item');
+        if (isSelected) {
+            projectListItem.classList.add('selected');
+        }
+
+        projectListItem.innerHTML = `
+            <button class="project-button">
+                <div class="project-icon">
+                    ${isSelected ? this.#projectSelectedIconSVG : this.#projectIconSVG}
+                </div>
+                <span class="project-name">${project.name}</span>
+            </button>
+        `;
+
+        return projectListItem;
+    }
+
+    createProjectList(projects = [], selectedProject = null, id = 'projectListContainer') {
         const projectListContainer = document.createElement('ul');
         projectListContainer.id = id;
         projectListContainer.classList.add('project-list');
 
-        let projectListContainerHTML = '';
         projects.forEach(project => {
             const isSelected = selectedProject.name === project.name;
-
-            projectListContainerHTML += `
-                <li class="project-item ${isSelected ? 'selected' : ''}" data-id="${project.name}">
-                       <button class="project-button">
-                        <div class="project-icon">
-                            ${isSelected ? this.#projectSelectedIconSVG : this.#projectIconSVG}
-                        </div>
-                        <span class="project-name">${project.name}</span>
-                     </button>
-                </li>
-            `;
+            const projectListItem = this.createProjectListItem(project, isSelected);
+            projectListContainer.appendChild(projectListItem);
         }); 
 
-        projectListContainer.innerHTML = projectListContainerHTML;
         return projectListContainer;
     }
 
-    selectProjectElement(project) {
+    selectProject(project) {
         const oldSelectedProject = document.querySelector('.selected');
         oldSelectedProject.classList.remove('selected');
         oldSelectedProject.querySelector('.project-icon').innerHTML = this.#projectIconSVG;
@@ -61,7 +71,7 @@ export default class DOMController {
         newSelectedProject.querySelector('.project-icon').innerHTML = this.#projectSelectedIconSVG;
     }
 
-    createTodoListHeaderElement(project, id = 'todoListHeaderContainer') {
+    createTodoListHeader(project, id = 'todoListHeaderContainer') {
         const todoListHeaderContainer = document.createElement('div');
         todoListHeaderContainer.id = id;
         todoListHeaderContainer.classList.add('header');
@@ -80,7 +90,7 @@ export default class DOMController {
         return todoListHeaderContainer;
     }
 
-    createTodoListElement(todos = [], id = 'todoListContainer') {
+    createTodoList(todos = [], id = 'todoListContainer') {
         const todoListContainer = document.createElement('ul');
         todoListContainer.id = id;
         todoListContainer.classList.add('todo-list');
@@ -110,6 +120,48 @@ export default class DOMController {
 
         todoListContainer.innerHTML = todoListContainerHTML;
         return todoListContainer;
+    }
 
+    createCreatorTemplate(creatorID, title) {
+        const creator = document.createElement('dialog');
+        creator.id = creatorID;
+        creator.classList.add('creator-dialog');
+
+        creator.innerHTML = `
+            <form class="creator-form" id="${creatorID}Form">
+                <div class="creator-header" id="${creatorID}Header">
+                    ${title}
+                </div>
+                <div class="creator-content" id="${creatorID}Content"></div>
+                <div class="creator-options" id="${creatorID}Options">
+                    <button class="creator-option" id=${creatorID}Create>Create</button>
+                    <button class="creator-option" id=${creatorID}Cancel>Cancel</button>
+                </div>
+            </form>
+        `;
+
+        const cancelOption = creator.querySelector(`#${creatorID}Cancel`);
+        cancelOption.addEventListener('click', (event) => {
+            event.preventDefault();
+            this.closeCreatorTemplate(creator);
+        });
+
+        return creator;
+    }
+
+    closeCreatorTemplate(creator) {
+        creator.close(); 
+    }
+
+    createCreatorField(type, name, label) {
+        const field = document.createElement('div');
+        field.classList.add('creator-field');
+
+        field.innerHTML = `
+            <label for="${name}Input">${label}</label>
+            <input type="${type}" name="${name}" id="${name}Input">
+        `;
+
+        return field;
     }
 }

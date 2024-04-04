@@ -89,6 +89,61 @@ body {
     color: rgb(255, 111, 21);
 }
 
+.creator-dialog {
+    padding: 0;
+    border: none;
+    border-radius: 10px;
+    background-color: rgb(76, 90, 108);
+    color: white;
+
+    &::backdrop {
+        backdrop-filter: grayscale(20%) blur(5px);
+    }
+}
+
+.creator-form {
+    --creator-inner-padding: 10px 16px;
+}
+
+.creator-header {
+    background-color: rgb(40, 50, 63);
+    font-size: 1.15em;
+    padding: var(--creator-inner-padding); 
+}
+
+.creator-content {
+    padding: var(--creator-inner-padding);
+}
+
+.creator-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0;
+}
+
+.creator-options {
+    padding: var(--creator-inner-padding);
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 8px;
+}
+
+.creator-option {
+    border: 0;
+    flex: 1;
+
+    background-color: rgb(55, 66, 82);
+    padding: 4px 8px;
+    border-radius: 5px;
+    color: white;
+
+    &:hover,
+    &:focus {
+        background-color: rgb(40, 50, 63);
+    }
+}
+
 .main-block {
     background-color: rgb(55, 66, 82);
     color: white;
