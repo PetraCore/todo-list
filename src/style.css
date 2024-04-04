@@ -62,7 +62,7 @@ body {
     list-style-type: none;
 
     display: grid;
-    grid-template: min-content / 1fr;
+    grid-template: min-content / minmax(0, 1fr);
     gap: 15px;
 }
 
@@ -74,10 +74,10 @@ body {
     color: inherit;
 
     font-size: 1.3em;
+    text-align: left;
 
     display: flex;
     justify-content: center;
-    align-items: center;
     gap: 8px;
 
     &:hover {
@@ -160,6 +160,12 @@ body {
 }
 
 .project-name {
+    /* 
+        Even though "word-break: break-word" is deprecated, it appears that it 
+        is the only workaround around this inherent grid bug: 
+        https://github.com/rachelandrew/gridbugs/issues/46
+    */
+    word-break: break-word;
     margin: 0;
 }
 

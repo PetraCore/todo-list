@@ -147,6 +147,8 @@ export default class AppController {
         const chores = this.#todoController.addProject('Chores');
         const programming = this.#todoController.addProject('Programming');
         const sport = this.#todoController.addProject('Sport');
+        const annoyingProject1 = this.#todoController.addProject('What do you mean I am supposed to be concise?');
+        const annoyingProject2 = this.#todoController.addProject('LookAtMeIDontUseSpacesImSoQuirky except now haha what am i doing im german btw how did you know');
 
         chores.addTodo('Buy groceries', 'pierogies, 1 jar of pickles, 2 loafs of bread, 2 sticks of butter', 'Tomorrow', 1);
         chores.addTodo('Vacuum the apartment', '', 'Today', 2);
