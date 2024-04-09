@@ -10,7 +10,8 @@ import DOMController from "./DOMController";
 export default class AppController {
     #todoController = new TodoController();
     #domController = new DOMController();
-    #projectsContainer = document.querySelector('#projectsContainer')
+    #projectsContainer = document.querySelector('#projectsContainer');
+    #todosContainer = document.querySelector('#todosContainer');
     #selectedProject = null;
 
     // Internal tools
@@ -114,10 +115,10 @@ export default class AppController {
         const projectCreator = document.querySelector(`#${CREATOR_ID}`);
         const createOption = projectCreator.querySelector(`#${CREATOR_ID}Create`);
 
-        const projectButton = event.currentTarget.parentElement.parentElement;
         createOption.dataset.mode = mode;
 
         if(mode === 'edit') {
+            const projectButton = event.currentTarget.parentElement.parentElement;
             const originalName = projectButton.querySelector('.project-name').textContent;
             projectCreator.querySelector('#projectNameInput').value = originalName;
             createOption.dataset.originalName = originalName;
@@ -191,21 +192,84 @@ export default class AppController {
 
     // Todos
 
-    loadTodos(project = this.#selectedProject) {
-        const todosContainer = document.querySelector('#todosContainer');
+    createTodoCreator() {
+        const CREATOR_ID = 'todoCreator';
 
+        const todoCreator = this.#domController.createCreatorTemplate(
+            CREATOR_ID, 'Create a new todo'
+        );
+        const creatorContent = todoCreator.querySelector(`#${CREATOR_ID}Content`);
+
+        const todoNameField = this.#domController.createCreatorField(
+            'text', 'projectName', 'Name:'
+        );
+        creatorContent.appendChild(todoNameField);
+
+        const createOption = todoCreator.querySelector(`#${CREATOR_ID}Create`);
+        createOption.dataset.mode = 'add';
+
+        createOption.addEventListener(
+            'click',
+            this.handleProjectCreator.bind(this)
+        );
+
+        return todoCreator;
+    }
+
+    openTodoCreator(mode = 'add', event) {
+        const CREATOR_ID = 'todoCreator';
+        const todoCreator = document.querySelector(`#${CREATOR_ID}`);
+        const createOption = todoCreator.querySelector(`#${CREATOR_ID}Create`);
+
+        createOption.dataset.mode = mode;
+
+        // if(mode === 'edit') {
+        //     const todoButton = event.currentTarget.parentElement.parentElement;
+        //     const originalName = todoButton.querySelector('.project-name').textContent;
+        //     todoCreator.querySelector('#projectNameInput').value = originalName;
+        //     createOption.dataset.originalName = originalName;
+        // }
+
+        todoCreator.showModal();
+    }
+
+    loadTodos(project = this.#selectedProject) {
+        const todoCreator = this.createTodoCreator();
         const todoListHeader = this.#domController.createTodoListHeader(project);
 
         const todos = AppController.convertObjectToArray(project.todos);
         const todoList = this.#domController.createTodoList(todos);
 
-        todosContainer.appendChild(todoListHeader);
-        todosContainer.appendChild(todoList);
+        this.#todosContainer.appendChild(todoCreator);
+        this.#todosContainer.appendChild(todoListHeader);
+        this.#todosContainer.appendChild(todoList);
+
+        this.activateTodos();
+    }
+
+    activateTodo(todoCard) {
+        const todoCheck = todoCard.querySelector('.todo-check');
+        const deleteTodoButton = todoCard.querySelector('.deleteTodoButton');
+        const editTodoButton = todoCard.querySelector('.editTodoButton');
+
+        todoCheck.addEventListener('click', () => {console.log('Check.')});
+        deleteTodoButton.addEventListener('click', () => {console.log('Delete.')});
+        editTodoButton.addEventListener('click', () => {console.log('Edit.')});
+    }
+    
+    activateTodos() {
+        const addTodoButton = this.#todosContainer.querySelector('#addTodoButton');
+        const todoCards = this.#todosContainer.querySelectorAll('.todo-card');
+
+        addTodoButton.addEventListener('click', () => {console.log('Add.')});
+
+        todoCards.forEach(todoCard => {
+            this.activateTodo(todoCard);
+        });
     }
 
     unloadTodos() {
-        const todosContainer = document.querySelector('#todosContainer');
-        todosContainer.innerHTML = '';
+        this.#todosContainer.innerHTML = '';
     }
 
     reloadTodos(project = this.#selectedProject) {

@@ -96,7 +96,7 @@ export default class DOMController {
             <h1 class="project-name option-container">
                 ${project.name}
                 <ul class="options">
-                    <li class="option" id="addTodoBtn">
+                    <li class="option" id="addTodoButton">
                         ${this.#todoOptionAddSVG}
                     </li>
                 </ul>
@@ -123,10 +123,10 @@ export default class DOMController {
                         ${todo.dueDate} 
                     </div>
                     <ul class="todo-options">
-                        <li class="todo-option">
+                        <li class="todo-option editTodoButton">
                             ${this.#todoOptionEditSVG} 
                         </li>
-                        <li class="todo-option">
+                        <li class="todo-option deleteTodoButton">
                             ${this.#todoOptionDeleteSVG} 
                         </li>
                     </ul>
