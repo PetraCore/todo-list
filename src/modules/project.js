@@ -17,8 +17,39 @@ export default class Project {
     }
 
     deleteTodo(todoTitle) {
-        let deletedTodo = this.getTodo(todoTitle);
+        const deletedTodo = this.getTodo(todoTitle);
         delete this.todos[todoTitle];
         return deletedTodo;
+    }
+
+    editTodo(
+        todoTitle,
+        newTitle = null,
+        newDescription = null,
+        newDueDate = null,
+        newPriority = null
+    ) {
+        let todo = this.getTodo(todoTitle);
+
+        if(newTitle) {
+            todo.title = newTitle;
+
+            this.todos[newTitle] = todo;
+            delete this.todos[todoTitle];
+
+            todo = this.getTodo(newTitle);
+        }
+        
+        if(newDescription) {
+            todo.description = newDescription;
+        }
+        if(newDueDate) {
+            todo.dueDate = newDueDate;
+        }
+        if(newPriority) {
+            todo.priority = newPriority;
+        }
+
+        return todo;
     }
 }

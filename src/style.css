@@ -45,14 +45,20 @@ body {
     grid-template: 1fr / 1fr min-content;
 }
 
-.options {
+.options,
+.project-options,
+.todo-options {
     list-style: none;
     margin: 0;
     padding: 0;
 }
 
-.option:hover {
-    cursor: pointer;
+.option {
+    height: min-content;
+
+    &:hover {
+        cursor: pointer;
+    }
 }
 
 .special-list,
@@ -66,6 +72,12 @@ body {
     gap: 15px;
 }
 
+.project-item {
+    display: grid;
+    grid-template: 1fr / 1fr min-content;
+    gap: 8px;
+}
+
 .special-button,
 .project-button {
     padding: 0;
@@ -77,12 +89,17 @@ body {
     text-align: left;
 
     display: flex;
-    justify-content: center;
     gap: 8px;
 
     &:hover {
         cursor: pointer;
     }
+}
+
+.project-options {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 4px;
 }
 
 .selected {
@@ -194,10 +211,6 @@ body {
 }
 
 .todo-options {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-
     display: flex;
     align-items: center;
     gap: 8px;

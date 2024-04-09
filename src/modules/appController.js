@@ -43,45 +43,106 @@ export default class AppController {
         const newProject = this.#todoController.addProject(name);
         this.loadProject(newProject);
     }
+    
+    editProject(name, newName) {
+        if(!this.#todoController.getProject(name)) {
+            return;
+        }
+        const editedProject = this.#todoController.editProject(name, newName);
+        if(editedProject) {
+            this.updateProject(name, editedProject);
+        }
+    }
+
+    deleteProject(name) {
+        const project = this.#todoController.getProject(name);
+        if (project === this.#selectedProject) {
+            this.#selectedProject = null;
+            this.unloadTodos();
+        }
+        this.#todoController.deleteProject(name);
+        this.#projectsContainer.querySelector(`[data-id="${name}"]`).remove();
+    }
+
+    handleProjectCreator(event) {
+        event.preventDefault();
+
+        const projectCreator = document.querySelector('#projectCreator');
+        const projectName = projectCreator.querySelector('#projectNameInput').value;
+
+        const mode = event.currentTarget.dataset.mode;
+        switch(mode) {
+            case 'add': {
+                this.addProject(projectName);
+                break;
+            }
+            case 'edit': {
+                const originalName = event.currentTarget.dataset.originalName;
+                this.editProject(originalName, projectName);
+                break;
+            }
+        }
+
+        projectCreator.close();
+    }
 
     createProjectCreator() {
         const CREATOR_ID = 'projectCreator';
 
-        const projectCreator = this.#domController.createCreatorTemplate
-        (CREATOR_ID, 'Create a new project');
+        const projectCreator = this.#domController.createCreatorTemplate(
+            CREATOR_ID, 'Create a new project'
+        );
         const creatorContent = projectCreator.querySelector(`#${CREATOR_ID}Content`);
 
-        const projectNameField = this.#domController.createCreatorField
-        ('text', 'projectName', 'Name:');
+        const projectNameField = this.#domController.createCreatorField(
+            'text', 'projectName', 'Name:'
+        );
         creatorContent.appendChild(projectNameField);
 
         const createOption = projectCreator.querySelector(`#${CREATOR_ID}Create`);
-        createOption.addEventListener('click', (event) => {
-            event.preventDefault();
-            const projectName = projectNameField.querySelector('#projectNameInput').value;
-            this.addProject(projectName);
-            projectCreator.close();
-        });
+        createOption.dataset.mode = 'add';
+
+        createOption.addEventListener(
+            'click',
+            this.handleProjectCreator.bind(this)
+        );
 
         return projectCreator;
     }
 
-    openProjectCreator() {
-        const projectCreator = document.querySelector('#projectCreator');
+    openProjectCreator(mode = 'add', event) {
+        const CREATOR_ID = 'projectCreator';
+        const projectCreator = document.querySelector(`#${CREATOR_ID}`);
+        const createOption = projectCreator.querySelector(`#${CREATOR_ID}Create`);
+
+        const projectButton = event.currentTarget.parentElement.parentElement;
+        createOption.dataset.mode = mode;
+
+        if(mode === 'edit') {
+            const originalName = projectButton.querySelector('.project-name').textContent;
+            projectCreator.querySelector('#projectNameInput').value = originalName;
+            createOption.dataset.originalName = originalName;
+        }
+
         projectCreator.showModal();
     }
 
     activateProject(projectItem) {
         const projectButton = projectItem.querySelector('.project-button');
         const projectName = projectButton.querySelector('.project-name').textContent;
+        const deleteProjectButton = projectItem.querySelector('.deleteProjectButton');
+        const editProjectButton = projectItem.querySelector('.editProjectButton');
+        
         projectButton.addEventListener('click', this.selectProject.bind(this, projectName));
+        deleteProjectButton.addEventListener('click', this.deleteProject.bind(this, projectName));
+        editProjectButton.addEventListener('click', this.openProjectCreator.bind(this, 'edit'));
     }
 
     activateProjects() {
         const addProjectButton = this.#projectsContainer.querySelector('#addProjectButton');
         const projectItems = this.#projectsContainer.querySelectorAll('.project-item');
 
-        addProjectButton.addEventListener('click', this.openProjectCreator)
+        addProjectButton.addEventListener('click', this.openProjectCreator.bind(this, 'add'))
 
         projectItems.forEach(projectItem => {
             this.activateProject(projectItem);
@@ -92,6 +153,18 @@ export default class AppController {
         const newProjectItem = this.#domController.createProjectListItem(project);
         this.#projectsContainer.querySelector('#projectListContainer').appendChild(newProjectItem);
         this.activateProject(newProjectItem);
+    }
+
+    updateProject(projectName, editedProject) {
+        const projectItem = this.#projectsContainer.querySelector(`[data-id="${projectName}"]`);
+        const updatedProjectItem = this.#domController.createProjectListItem(editedProject);
+        projectItem.replaceWith(updatedProjectItem);
+
+        if(editedProject === this.#selectedProject) {
+            this.selectProject(editedProject);
+        }
+        
+        this.activateProject(updatedProjectItem);
     }
 
     loadProjects() {
