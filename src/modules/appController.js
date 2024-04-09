@@ -37,11 +37,10 @@ export default class AppController {
     }
 
     addProject(name) {
-        if(this.#todoController.getProject(name)) {
-            return;
-        }
         const newProject = this.#todoController.addProject(name);
-        this.loadProject(newProject);
+        if(newProject) {
+            this.loadProject(newProject);
+        }
     }
     
     editProject(name, newName) {

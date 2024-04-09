@@ -5,14 +5,19 @@ export default class TodoController {
         this.projects = {};
     }
 
+    getProject(projectName) {
+        return this.projects[projectName];
+    }
+
     addProject(name) {
+        if (this.getProject(name)) {
+            console.error(`Cannot add project: Project with this name ("${name}") already exists!`);
+            return;
+        }
+
         const newProject = new Project(name);
         this.projects[name] = newProject;
         return newProject;
-    }
-
-    getProject(projectName) {
-        return this.projects[projectName];
     }
 
     deleteProject(projectName) {
