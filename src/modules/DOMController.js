@@ -108,6 +108,7 @@ export default class DOMController {
 
     createTodoCard(todo) {
         const todoCard = document.createElement('li');
+        todoCard.dataset.id = todo.title;
         todoCard.classList.add('todo-card');
 
         todoCard.innerHTML = `

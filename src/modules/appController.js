@@ -204,6 +204,18 @@ export default class AppController {
         }
     }
 
+    deleteTodo(title) {
+        const todo = this.#selectedProject.getTodo(title);
+        if(!todo) {
+            console.error(
+                `Cannot delete todo: Could not find todo "${title}" in selected project"`
+            );
+            return;
+        }
+        this.#selectedProject.deleteTodo(title);
+        this.#todosContainer.querySelector(`[data-id="${title}"]`).remove();
+    }
+
     handleTodoCreator(event) {
         event.preventDefault();
 
@@ -316,9 +328,10 @@ export default class AppController {
         const todoCheck = todoCard.querySelector('.todo-check');
         const deleteTodoButton = todoCard.querySelector('.deleteTodoButton');
         const editTodoButton = todoCard.querySelector('.editTodoButton');
+        const todoTitle = todoCard.dataset.id;
 
         todoCheck.addEventListener('click', () => {console.log('Check.')});
-        deleteTodoButton.addEventListener('click', () => {console.log('Delete.')});
+        deleteTodoButton.addEventListener('click', () => this.deleteTodo(todoTitle));
         editTodoButton.addEventListener('click', () => {console.log('Edit.')});
     }
     
