@@ -116,6 +116,10 @@ body {
     &::backdrop {
         backdrop-filter: grayscale(20%) blur(5px);
     }
+    &[open] {
+        display: grid;
+        grid-template: 1fr / 1fr;
+    }
 }
 
 .creator-form {
@@ -134,7 +138,7 @@ body {
 
 .creator-field {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 8px;
     margin: 10px 0;
 }
@@ -198,16 +202,30 @@ body {
 }
 
 .todo-card {
-    height: 30px;
+    min-height: 30px;
     padding: 10px;
     background-color: rgb(76, 90, 108);
     border-radius: 10px;
     box-shadow: 2px 2px 5px rgb(40, 50, 63);
 
     display: grid;
-    grid-template: 1fr / min-content max-content 1fr min-content;
+    grid-template: 
+        1fr /
+        min-content repeat(2, fit-content(100%))
+        minmax(max-content, 1fr) max-content min-content
+    ;
     align-items: center;
     gap: 24px;
+}
+
+.todo-title,
+.todo-description {
+    word-break: break-word;
+}
+
+.todo-due-date,
+.todo-priority {
+    text-align: right;
 }
 
 .todo-options {

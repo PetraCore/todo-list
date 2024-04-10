@@ -192,6 +192,51 @@ export default class AppController {
 
     // Todos
 
+    addTodo(todo) {
+        const newTodo = this.#selectedProject.addTodo(
+            todo.title,
+            todo.description,
+            todo.dueDate,
+            todo.priority
+        );
+        if(newTodo) {
+            this.loadTodo(newTodo);
+        }
+    }
+
+    handleTodoCreator(event) {
+        event.preventDefault();
+
+        const todoCreator = document.querySelector('#todoCreator');
+
+        const todoTitle = todoCreator.querySelector('#todoTitleInput').value;
+        const todoDescription = todoCreator.querySelector('#todoDescriptionInput').value;
+        const todoDueDate = todoCreator.querySelector('#todoDueDateInput').value;
+        const todoPriority = todoCreator.querySelector('#todoPriorityInput').value;
+
+        const todo = {
+            title: todoTitle,
+            description: todoDescription,
+            dueDate: todoDueDate,
+            priority: todoPriority
+        };
+
+        const mode = event.currentTarget.dataset.mode;
+        switch(mode) {
+            case 'add': {
+                this.addTodo(todo);
+                break;
+            }
+            case 'edit': {
+                // const originalName = event.currentTarget.dataset.originalName;
+                // this.editProject(originalName, todoTitle);
+                break;
+            }
+        }
+
+        todoCreator.close();
+    }
+
     createTodoCreator() {
         const CREATOR_ID = 'todoCreator';
 
@@ -200,17 +245,31 @@ export default class AppController {
         );
         const creatorContent = todoCreator.querySelector(`#${CREATOR_ID}Content`);
 
-        const todoNameField = this.#domController.createCreatorField(
-            'text', 'projectName', 'Name:'
+        const todoTitleField = this.#domController.createCreatorField(
+            'text', 'todoTitle', 'Title:'
         );
-        creatorContent.appendChild(todoNameField);
+        const todoDescriptionField = this.#domController.createCreatorField(
+            'textarea', 'todoDescription', 'Description:'
+        );
+        const todoDueDateField = this.#domController.createCreatorField(
+            'date', 'todoDueDate', 'Due date:'
+        );
+        const todoPriorityField = this.#domController.createCreatorField(
+            'select', 'todoPriority', 'Priority:',
+            {options: ['low', 'medium', 'high']}
+        );
+
+        creatorContent.appendChild(todoTitleField);
+        creatorContent.appendChild(todoDescriptionField);
+        creatorContent.appendChild(todoDueDateField);
+        creatorContent.appendChild(todoPriorityField);
 
         const createOption = todoCreator.querySelector(`#${CREATOR_ID}Create`);
         createOption.dataset.mode = 'add';
 
         createOption.addEventListener(
             'click',
-            this.handleProjectCreator.bind(this)
+            this.handleTodoCreator.bind(this)
         );
 
         return todoCreator;
@@ -231,6 +290,12 @@ export default class AppController {
         // }
 
         todoCreator.showModal();
+    }
+
+    loadTodo(todo) {
+        const newTodoCard = this.#domController.createTodoCard(todo);
+        this.#todosContainer.querySelector('#todoListContainer').appendChild(newTodoCard);
+        this.activateTodo(newTodoCard);
     }
 
     loadTodos(project = this.#selectedProject) {
@@ -261,7 +326,7 @@ export default class AppController {
         const addTodoButton = this.#todosContainer.querySelector('#addTodoButton');
         const todoCards = this.#todosContainer.querySelectorAll('.todo-card');
 
-        addTodoButton.addEventListener('click', () => {console.log('Add.')});
+        addTodoButton.addEventListener('click', this.openTodoCreator.bind(this, 'add'));
 
         todoCards.forEach(todoCard => {
             this.activateTodo(todoCard);
@@ -286,14 +351,18 @@ export default class AppController {
         const annoyingProject1 = this.#todoController.addProject('What do you mean I am supposed to be concise?');
         const annoyingProject2 = this.#todoController.addProject('LookAtMeIDontUseSpacesImSoQuirky except now haha what am i doing im german btw how did you know');
 
-        chores.addTodo('Buy groceries', 'pierogies, 1 jar of pickles, 2 loafs of bread, 2 sticks of butter', 'Tomorrow', 1);
-        chores.addTodo('Vacuum the apartment', '', 'Today', 2);
+        chores.addTodo('Buy groceries', 'pierogies, 1 jar of pickles, 2 loafs of bread, 2 sticks of butter', 'Tomorrow', 'low');
+        chores.addTodo('Vacuum the apartment', '', 'Today', 'medium');
 
-        programming.addTodo('Procrastinate', 'The key to success! (... not really)', 'Today', 3).complete();
-        programming.addTodo('Create Todo app', '', 'Yesterday', 1);
-        programming.addTodo('Finish TOP curriculum', 'Someday...', '', 2);
+        programming.addTodo('Procrastinate', 'The key to success! (... not really)', 'Today', 'high').complete();
+        programming.addTodo('Create Todo app', '', 'Yesterday', 'low');
+        programming.addTodo('Finish TOP curriculum', 'Someday...', '', 'medium');
 
-        sport.addTodo('Run 3km', 'I hate running but it keeps me feet', 'Saturday', 2);
+        sport.addTodo('Run 3km', 'I hate running but it keeps me feet', 'Saturday', 'medium');
+
+        annoyingProject1.addTodo('Practice screaming', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', '04-10-2024', 'medium');
+        annoyingProject1.addTodo('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'Practice screaming', '04-10-2024', 'medium');
+        annoyingProject1.addTodo('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', '04-10-2024', 'medium');
 
         this.#selectedProject = programming;
     }

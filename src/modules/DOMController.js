@@ -106,35 +106,46 @@ export default class DOMController {
         return todoListHeaderContainer;
     }
 
+    createTodoCard(todo) {
+        const todoCard = document.createElement('li');
+        todoCard.classList.add('todo-card');
+
+        todoCard.innerHTML = `
+            ${todo.isCompleted ? this.#todoCheckFilledSVG : this.#todoCheckEmptySVG}
+            <div class="todo-title">
+                ${todo.title} 
+            </div>
+            <div class="todo-description">
+                ${todo.description} 
+            </div>
+            <div class="todo-due-date">
+                ${todo.dueDate} 
+            </div>
+            <div class="todo-priority">
+                ${todo.priority} 
+            </div>
+            <ul class="todo-options">
+                <li class="todo-option editTodoButton">
+                    ${this.#todoOptionEditSVG} 
+                </li>
+                <li class="todo-option deleteTodoButton">
+                    ${this.#todoOptionDeleteSVG} 
+                </li>
+            </ul>
+       `;
+       return todoCard;
+    }
+
     createTodoList(todos = [], id = 'todoListContainer') {
         const todoListContainer = document.createElement('ul');
         todoListContainer.id = id;
         todoListContainer.classList.add('todo-list');
 
-        let todoListContainerHTML = '';
         todos.forEach(todo => {
-            todoListContainerHTML += `
-                <li class="todo-card">
-                    ${todo.isCompleted ? this.#todoCheckFilledSVG : this.#todoCheckEmptySVG}
-                    <div class="todo-title">
-                        ${todo.title} 
-                    </div>
-                    <div class="todo-due-date">
-                        ${todo.dueDate} 
-                    </div>
-                    <ul class="todo-options">
-                        <li class="todo-option editTodoButton">
-                            ${this.#todoOptionEditSVG} 
-                        </li>
-                        <li class="todo-option deleteTodoButton">
-                            ${this.#todoOptionDeleteSVG} 
-                        </li>
-                    </ul>
-                </li>
-            `;
+            const todoCard = this.createTodoCard(todo);
+            todoListContainer.appendChild(todoCard);
         }); 
 
-        todoListContainer.innerHTML = todoListContainerHTML;
         return todoListContainer;
     }
 
@@ -171,14 +182,46 @@ export default class DOMController {
         creator.close(); 
     }
 
-    createCreatorField(type, name, label) {
+    createCreatorField(type, name, label, attributes = {}) {
+        const id = name + 'Input';
         const field = document.createElement('div');
         field.classList.add('creator-field');
 
-        field.innerHTML = `
-            <label for="${name}Input">${label}</label>
-            <input type="${type}" name="${name}" id="${name}Input">
-        `;
+        const fieldLabel = document.createElement('label');
+        fieldLabel.for = id;
+        fieldLabel.textContent = label; 
+
+        field.appendChild(fieldLabel);
+
+        let fieldInput;
+        switch(type) {
+            case 'textarea': {
+                fieldInput = document.createElement('textarea');
+                fieldInput.cols = 50;
+                fieldInput.rows = 5;
+                break;
+            }
+            case 'select': {
+                fieldInput = document.createElement('select');
+                attributes.options.forEach(option => {
+                    const inputOption = document.createElement('option');
+                    inputOption.value = option;
+                    inputOption.innerText = option;
+                    fieldInput.appendChild(inputOption);
+                });
+                break;
+            }
+            default: {
+                fieldInput = document.createElement('input');
+                fieldInput.type = type;
+                break;
+            }
+        }
+
+        fieldInput.id = id;
+        fieldInput.name = name;
+
+        field.appendChild(fieldInput);
 
         return field;
     }

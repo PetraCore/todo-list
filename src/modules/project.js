@@ -7,6 +7,11 @@ export default class Project {
     }
 
     addTodo(title, description, dueDate, priority) {
+        if (this.getTodo(title)) {
+            console.error(`Cannot add todo: Todo with this title ("${title}") already exists!`);
+            return;
+        }
+
         const newTodo = new Todo(title, description, dueDate, priority);
         this.todos[title] = newTodo;
         return newTodo;
