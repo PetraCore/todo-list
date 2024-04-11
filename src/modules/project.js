@@ -29,30 +29,39 @@ export default class Project {
 
     editTodo(
         todoTitle,
-        newTitle = null,
-        newDescription = null,
-        newDueDate = null,
-        newPriority = null
+        newProperties 
     ) {
+        if(typeof newProperties !== 'object') {
+            console.error(`Cannot edit todo: no properties specified!`);
+            return;
+        }
+
         let todo = this.getTodo(todoTitle);
 
-        if(newTitle) {
-            todo.title = newTitle;
+        if(todoTitle !== newProperties.title) {
+            if(this.getTodo(newProperties.title)) {
+                console.error(`Cannot edit todo: todo with this title ("${newProperties.title}") already exists!`);
+                return;
+            }
 
-            this.todos[newTitle] = todo;
-            delete this.todos[todoTitle];
+            if(newProperties.title) {
+                todo.title = newProperties.title;
 
-            todo = this.getTodo(newTitle);
+                this.todos[newProperties.title] = todo;
+                delete this.todos[todoTitle];
+
+                todo = this.getTodo(newProperties.title);
+            }
         }
-        
-        if(newDescription) {
-            todo.description = newDescription;
+
+        if(newProperties.description) {
+            todo.description = newProperties.description;
         }
-        if(newDueDate) {
-            todo.dueDate = newDueDate;
+        if(newProperties.dueDate) {
+            todo.dueDate = newProperties.dueDate;
         }
-        if(newPriority) {
-            todo.priority = newPriority;
+        if(newProperties.priority) {
+            todo.priority = newProperties.priority;
         }
 
         return todo;

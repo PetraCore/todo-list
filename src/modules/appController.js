@@ -119,7 +119,7 @@ export default class AppController {
 
         if(mode === 'edit') {
             const projectButton = event.currentTarget.parentElement.parentElement;
-            const originalName = projectButton.querySelector('.project-name').textContent;
+            const originalName = projectButton.dataset.id;
             projectCreator.querySelector('#projectNameInput').value = originalName;
             createOption.dataset.originalName = originalName;
         }
@@ -204,6 +204,13 @@ export default class AppController {
         }
     }
 
+    editTodo(todoTitle, newTodo) {
+        const editedTodo = this.#selectedProject.editTodo(todoTitle, newTodo);
+        if(editedTodo) {
+            this.updateTodo(todoTitle, editedTodo);
+        }
+    }
+
     deleteTodo(title) {
         const todo = this.#selectedProject.getTodo(title);
         if(!todo) {
@@ -240,8 +247,8 @@ export default class AppController {
                 break;
             }
             case 'edit': {
-                // const originalName = event.currentTarget.dataset.originalName;
-                // this.editProject(originalName, todoTitle);
+                const originalTitle = event.currentTarget.dataset.originalTitle;
+                this.editTodo(originalTitle, todo);
                 break;
             }
         }
@@ -294,12 +301,18 @@ export default class AppController {
 
         createOption.dataset.mode = mode;
 
-        // if(mode === 'edit') {
-        //     const todoButton = event.currentTarget.parentElement.parentElement;
-        //     const originalName = todoButton.querySelector('.project-name').textContent;
-        //     todoCreator.querySelector('#projectNameInput').value = originalName;
-        //     createOption.dataset.originalName = originalName;
-        // }
+        if(mode === 'edit') {
+            const todoCard = event.currentTarget.parentElement.parentElement;
+            const originalTitle = todoCard.dataset.id;
+            const originalTodo = this.#selectedProject.getTodo(originalTitle);
+
+            todoCreator.querySelector('#todoTitleInput').value = originalTodo.title;
+            todoCreator.querySelector('#todoDescriptionInput').value =  originalTodo.description;
+            todoCreator.querySelector('#todoDueDateInput').value = originalTodo.dueDate;
+            todoCreator.querySelector('#todoPriorityInput').value = originalTodo.priority;
+
+            createOption.dataset.originalTitle = originalTitle;
+        }
 
         todoCreator.showModal();
     }
@@ -308,6 +321,14 @@ export default class AppController {
         const newTodoCard = this.#domController.createTodoCard(todo);
         this.#todosContainer.querySelector('#todoListContainer').appendChild(newTodoCard);
         this.activateTodo(newTodoCard);
+    }
+
+    updateTodo(todoTitle, editedTodo) {
+        const todoCard = this.#todosContainer.querySelector(`[data-id="${todoTitle}"]`);
+        const updatedTodoCard = this.#domController.createTodoCard(editedTodo);
+        todoCard.replaceWith(updatedTodoCard);
+
+        this.activateTodo(updatedTodoCard);
     }
 
     loadTodos(project = this.#selectedProject) {
@@ -331,8 +352,8 @@ export default class AppController {
         const todoTitle = todoCard.dataset.id;
 
         todoCheck.addEventListener('click', () => {console.log('Check.')});
-        deleteTodoButton.addEventListener('click', () => this.deleteTodo(todoTitle));
-        editTodoButton.addEventListener('click', () => {console.log('Edit.')});
+        deleteTodoButton.addEventListener('click', this.deleteTodo.bind(this, todoTitle));
+        editTodoButton.addEventListener('click', this.openTodoCreator.bind(this, 'edit'));
     }
     
     activateTodos() {
