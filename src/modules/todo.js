@@ -8,8 +8,13 @@ export default class Todo {
         this.completionDate = null; 
     }
 
-    complete() {
-        this.isCompleted = true;
-        this.completionDate = 'WIP';
+    toggleCompletion() {
+        if(this.isCompleted) {
+            this.isCompleted = false;
+            this.completionDate = null;
+        } else {
+            this.isCompleted = true;
+            this.completionDate = 'WIP';
+        }
     }
 }

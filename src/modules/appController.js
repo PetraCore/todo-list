@@ -211,16 +211,22 @@ export default class AppController {
         }
     }
 
-    deleteTodo(title) {
-        const todo = this.#selectedProject.getTodo(title);
+    deleteTodo(todoTitle) {
+        const todo = this.#selectedProject.getTodo(todoTitle);
         if(!todo) {
             console.error(
-                `Cannot delete todo: Could not find todo "${title}" in selected project"`
+                `Cannot delete todo: Could not find todo "${todoTitle}" in selected project"`
             );
             return;
         }
-        this.#selectedProject.deleteTodo(title);
-        this.#todosContainer.querySelector(`[data-id="${title}"]`).remove();
+        this.#selectedProject.deleteTodo(todoTitle);
+        this.#todosContainer.querySelector(`[data-id="${todoTitle}"]`).remove();
+    }
+
+    toggleTodoCompletion(todoTitle) {
+        const todo = this.#selectedProject.getTodo(todoTitle);
+        todo.toggleCompletion();
+        this.updateTodo(todoTitle, todo);
     }
 
     handleTodoCreator(event) {
@@ -323,9 +329,9 @@ export default class AppController {
         this.activateTodo(newTodoCard);
     }
 
-    updateTodo(todoTitle, editedTodo) {
+    updateTodo(todoTitle, updatedTodo) {
         const todoCard = this.#todosContainer.querySelector(`[data-id="${todoTitle}"]`);
-        const updatedTodoCard = this.#domController.createTodoCard(editedTodo);
+        const updatedTodoCard = this.#domController.createTodoCard(updatedTodo);
         todoCard.replaceWith(updatedTodoCard);
 
         this.activateTodo(updatedTodoCard);
@@ -346,12 +352,12 @@ export default class AppController {
     }
 
     activateTodo(todoCard) {
-        const todoCheck = todoCard.querySelector('.todo-check');
+        const todoCheckbox = todoCard.querySelector('.todo-checkbox');
         const deleteTodoButton = todoCard.querySelector('.deleteTodoButton');
         const editTodoButton = todoCard.querySelector('.editTodoButton');
         const todoTitle = todoCard.dataset.id;
 
-        todoCheck.addEventListener('click', () => {console.log('Check.')});
+        todoCheckbox.addEventListener('click', this.toggleTodoCompletion.bind(this, todoTitle));
         deleteTodoButton.addEventListener('click', this.deleteTodo.bind(this, todoTitle));
         editTodoButton.addEventListener('click', this.openTodoCreator.bind(this, 'edit'));
     }
@@ -388,7 +394,7 @@ export default class AppController {
         chores.addTodo('Buy groceries', 'pierogies, 1 jar of pickles, 2 loafs of bread, 2 sticks of butter', 'Tomorrow', 'low');
         chores.addTodo('Vacuum the apartment', '', 'Today', 'medium');
 
-        programming.addTodo('Procrastinate', 'The key to success! (... not really)', 'Today', 'high').complete();
+        programming.addTodo('Procrastinate', 'The key to success! (... not really)', 'Today', 'high').toggleCompletion();
         programming.addTodo('Create Todo app', '', 'Yesterday', 'low');
         programming.addTodo('Finish TOP curriculum', 'Someday...', '', 'medium');
 
