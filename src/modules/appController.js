@@ -211,7 +211,9 @@ export default class AppController {
         }
     }
 
-    deleteTodo(todoTitle) {
+    deleteTodo(todoTitle, event) {
+        event.stopPropagation();
+
         const todo = this.#selectedProject.getTodo(todoTitle);
         if(!todo) {
             console.error(
@@ -220,10 +222,17 @@ export default class AppController {
             return;
         }
         this.#selectedProject.deleteTodo(todoTitle);
-        this.#todosContainer.querySelector(`[data-id="${todoTitle}"]`).remove();
+
+        const todoCard = this.#todosContainer.querySelector(`[data-id="${todoTitle}"]`) 
+        if (todoCard.dataset.isShowingDetails === 'true') {
+            this.unloadTodoDetails(todoCard);
+        }
+        todoCard.remove();
     }
 
-    toggleTodoCompletion(todoTitle) {
+    toggleTodoCompletion(todoTitle, event) {
+        event.stopPropagation()
+
         const todo = this.#selectedProject.getTodo(todoTitle);
         todo.toggleCompletion();
         this.updateTodo(todoTitle, todo);
@@ -301,6 +310,8 @@ export default class AppController {
     }
 
     openTodoCreator(mode = 'add', event) {
+        event.stopPropagation();
+
         const CREATOR_ID = 'todoCreator';
         const todoCreator = document.querySelector(`#${CREATOR_ID}`);
         const createOption = todoCreator.querySelector(`#${CREATOR_ID}Create`);
@@ -323,6 +334,41 @@ export default class AppController {
         todoCreator.showModal();
     }
 
+    loadTodoDetails(todoCard) {
+        const todoTitle = todoCard.dataset.id;
+        const todo = this.#selectedProject.getTodo(todoTitle);
+        const todoDetails = this.#domController.createTodoDetails(todo);
+
+        todoCard.dataset.isShowingDetails = true;
+        todoCard.after(todoDetails);
+    }
+
+    unloadTodoDetails(todoCard) {
+        const sibling = todoCard.nextElementSibling;
+        if (sibling.classList.contains('todo-details')) {
+            todoCard.dataset.isShowingDetails = false;
+            sibling.remove();
+        } else {
+            console.error('Cannot unload todo details: Could not find matching element');
+        }
+    }
+
+    reloadTodoDetails(todoCard) {
+        this.unloadTodoDetails(todoCard);
+        this.loadTodoDetails(todoCard);
+    }
+
+    toggleTodoDetails(todoCard) {
+        // Since data is stored as an html attribute it is converted to string
+        if (todoCard.dataset.isShowingDetails === 'true') {
+            this.unloadTodoDetails(todoCard);
+        } else if (todoCard.dataset.isShowingDetails === 'false') {
+            this.loadTodoDetails(todoCard);
+        } else {
+            console.error('Cannot toggle todo details: incorrect isShowingDetails parameter value');
+        }
+    }
+
     loadTodo(todo) {
         const newTodoCard = this.#domController.createTodoCard(todo);
         this.#todosContainer.querySelector('#todoListContainer').appendChild(newTodoCard);
@@ -335,6 +381,10 @@ export default class AppController {
         todoCard.replaceWith(updatedTodoCard);
 
         this.activateTodo(updatedTodoCard);
+
+        if(todoCard.dataset.isShowingDetails === 'true') {
+            this.reloadTodoDetails(updatedTodoCard);
+        }
     }
 
     loadTodos(project = this.#selectedProject) {
@@ -357,6 +407,9 @@ export default class AppController {
         const editTodoButton = todoCard.querySelector('.editTodoButton');
         const todoTitle = todoCard.dataset.id;
 
+        todoCard.dataset.isShowingDetails = false;
+
+        todoCard.addEventListener('click', this.toggleTodoDetails.bind(this, todoCard));
         todoCheckbox.addEventListener('click', this.toggleTodoCompletion.bind(this, todoTitle));
         deleteTodoButton.addEventListener('click', this.deleteTodo.bind(this, todoTitle));
         editTodoButton.addEventListener('click', this.openTodoCreator.bind(this, 'edit'));

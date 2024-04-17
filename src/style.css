@@ -216,22 +216,70 @@ body {
     ;
     align-items: center;
     gap: 24px;
+
+    &:hover {
+        filter: brightness(1.15);
+    }
 }
 
 .todo-title,
-.todo-description {
+.todo-description,
+.text-box {
     word-break: break-word;
-}
-
-.todo-due-date,
-.todo-priority {
-    text-align: right;
 }
 
 .todo-options {
     display: flex;
     align-items: center;
     gap: 8px;
+}
+
+.text-box {
+    margin: 4px 0 8px 0;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: rgb(40, 50, 63);
+    color: inherit;
+
+    resize: vertical;
+}
+
+.todo-due-date,
+.todo-priority {
+    text-align: right;
+
+    .todo-details & {
+        text-align: inherit;
+    }
+}
+
+.todo-details {
+    margin-bottom: 32px;
+    padding: 10px;
+    background-color: rgb(48, 58, 73);
+
+    display: grid;
+    grid-template: 1fr / 1fr;
+    gap: 15px;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.detail-name {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.detail-value {
+    word-break: break-word;
+    &::before {
+        content: '- ';
+    }
 }
 
 .footer {

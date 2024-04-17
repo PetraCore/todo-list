@@ -152,6 +152,55 @@ export default class DOMController {
         return todoListContainer;
     }
 
+    createTodoDetails(todo) {
+        const todoDetails = document.createElement('li');
+        todoDetails.classList.add('todo-details');
+
+        todoDetails.innerHTML = `
+            <div class="detail-item">
+                <div class="detail-name">Title:</div>
+                <div class="detail-value">${todo.title}</div>
+            </div>
+            ${
+                todo.description
+                ? '<div class="detail-item">'
+                    + '<div class="detail-name">Description:</div>' 
+                    + `<textarea readonly class="detail-value text-box" rows=5>${todo.description}</textarea>`
+                + '</div>'
+                : ''
+            }
+            ${
+                todo.dueDate
+                ? '<div class="detail-item">'
+                    + '<div class="detail-name">Due date:</div>' 
+                    + `<div class="detail-value">${todo.dueDate}</div>`
+                + '</div>'
+                : ''
+            }
+            ${
+                todo.priority
+                ? '<div class="detail-item">'
+                    + '<div class="detail-name">Priority:</div>' 
+                    + `<div class="detail-value">${todo.priority}</div>`
+                + '</div>'
+                : ''
+            }
+            <div class="detail-item">
+                <div class="detail-name">Completion:</div>
+                <div class="detail-value">${todo.isCompleted}</div>
+            </div>
+            ${
+                todo.completionDate
+                ? '<div class="detail-item">'
+                    + '<div class="detail-name">Completion date:</div>' 
+                    + `<div class="detail-value">${todo.completionDate}</div>`
+                + '</div>'
+                : ''
+            }
+       `;
+       return todoDetails;
+    }
+
     // Creator
 
     createCreatorTemplate(creatorID, title) {
