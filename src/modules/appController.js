@@ -11,6 +11,7 @@ export default class AppController {
     #todoController = new TodoController();
     #domController = new DOMController();
     #projectsContainer = document.querySelector('#projectsContainer');
+    #specialsContainer = document.querySelector('#specialsContainer');
     #todosContainer = document.querySelector('#todosContainer');
     #selectedProject = null;
 
@@ -188,6 +189,13 @@ export default class AppController {
     reloadProjects() {
         this.unloadProjects();
         this.loadProjects();
+    }
+
+    loadSpecials() {
+        const specials = ['Inbox', 'Today', 'This week'];
+        const specialList = this.#domController.createSpecialList(specials, this.#selectedProject, 'specialList');
+
+        this.#specialsContainer.appendChild(specialList);
     }
 
     // Todos
@@ -462,6 +470,7 @@ export default class AppController {
 
     initializeApp() {
         this.loadSampleData();
+        this.loadSpecials();
         this.loadProjects();
         this.loadTodos();
     }

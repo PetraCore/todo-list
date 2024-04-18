@@ -5,6 +5,10 @@ export default class DOMController {
     #projectOptionDeleteSVG = '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="white" d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6z"/></svg>';
     #projectOptionEditSVG = '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="white" d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83l3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75z"/></svg>';
 
+    #specialIconInboxSVG = '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="white" d="M19 15h-4a3 3 0 0 1-3 3a3 3 0 0 1-3-3H5V5h14m0-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2"/></svg>';
+    #specialIconTodaySVG = '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="white" d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1"/></svg>';
+    #specialIconWeekSVG = '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="white" d="M9 10H7v2h2zm4 0h-2v2h2zm4 0h-2v2h2zm2-7h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2m0 16H5V8h14z"/></svg>';
+
     #todoCheckEmptySVG = '<svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24"><path fill="white" d="M12 2A10 10 0 0 0 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2"/></svg>';
     #todoCheckFilledSVG = '<svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24"><path fill="white" d="m10 17l-5-5l1.41-1.42L10 14.17l7.59-7.59L19 8m-7-6A10 10 0 0 0 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2"/></svg>';
     #todoOptionAddSVG = '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="white" d="M17 13h-4v4h-2v-4H7v-2h4V7h2v4h4m-5-9A10 10 0 0 0 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2"/></svg>';
@@ -83,6 +87,52 @@ export default class DOMController {
         const newSelectedProject = document.querySelector(`[data-id="${project.name}"]`);
         newSelectedProject.classList.add('selected');
         newSelectedProject.querySelector('.project-icon').innerHTML = this.#projectSelectedIconSVG;
+    }
+
+    createSpecialListItem(special, isSelected = false) {
+        const specialListItem = document.createElement('li');
+        specialListItem.dataset.id = special;
+
+        specialListItem.classList.add('special-item');
+        if (isSelected) {
+            specialListItem.classList.add('selected');
+        }
+
+        specialListItem.innerHTML = `
+            <button class="special-button">
+                <div class="special-icon">
+                        ${
+                            special === 'Inbox' ?
+                                `${this.#specialIconInboxSVG}`
+
+                            : special === 'Today' ?
+                                `${this.#specialIconTodaySVG}`
+
+                            : special === 'This week'?
+                                `${this.#specialIconWeekSVG}`
+
+                            : ''
+                        }
+                </div>
+                <span class="special-name">${special}</span>
+            </button>
+        `;
+
+        return specialListItem; 
+    }
+
+    createSpecialList(specials = [], selectedProject = null, id = 'specialList') {
+        const specialList = document.createElement('ul');
+        specialList.id = id;
+        specialList.classList.add('special-list');
+
+        specials.forEach(special => {
+            const isSelected = selectedProject.name === special;
+            const projectListItem = this.createSpecialListItem(special, isSelected);
+            specialList.appendChild(projectListItem);
+        }); 
+
+        return specialList;
     }
 
     // Todos
