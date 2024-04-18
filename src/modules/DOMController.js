@@ -17,12 +17,12 @@ export default class DOMController {
 
     // Projects
 
-    createProjectListHeader(id = 'projectListHeaderContainer') {
-        const projectListHeaderContainer = document.createElement('h2');
-        projectListHeaderContainer.id = id;
-        projectListHeaderContainer.classList.add('option-container');
+    createProjectListHeader(id = 'projectListHeader') {
+        const projectListHeader = document.createElement('h2');
+        projectListHeader.id = id;
+        projectListHeader.classList.add('option-container');
 
-        projectListHeaderContainer.innerHTML = `
+        projectListHeader.innerHTML = `
             <span>Projects</span> 
             <ul class="options">
                 <li class="option" id="addProjectButton">
@@ -31,7 +31,7 @@ export default class DOMController {
             </ul> 
         `;
 
-        return projectListHeaderContainer;
+        return projectListHeader;
     }
 
     createProjectListItem(project, isSelected = false) {
@@ -63,18 +63,18 @@ export default class DOMController {
         return projectListItem;
     }
 
-    createProjectList(projects = [], selectedProject = null, id = 'projectListContainer') {
-        const projectListContainer = document.createElement('ul');
-        projectListContainer.id = id;
-        projectListContainer.classList.add('project-list');
+    createProjectList(projects = [], selectedProject = null, id = 'projectList') {
+        const projectList = document.createElement('ul');
+        projectList.id = id;
+        projectList.classList.add('project-list');
 
         projects.forEach(project => {
             const isSelected = selectedProject.name === project.name;
             const projectListItem = this.createProjectListItem(project, isSelected);
-            projectListContainer.appendChild(projectListItem);
+            projectList.appendChild(projectListItem);
         }); 
 
-        return projectListContainer;
+        return projectList;
     }
 
     selectProject(project) {
