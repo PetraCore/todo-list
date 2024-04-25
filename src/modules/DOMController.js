@@ -81,12 +81,16 @@ export default class DOMController {
         const oldSelectedProject = document.querySelector('.selected');
         if(oldSelectedProject) {
             oldSelectedProject.classList.remove('selected');
-            oldSelectedProject.querySelector('.project-icon').innerHTML = this.#projectIconSVG;
+            if(!oldSelectedProject.classList.contains('special-item')) {
+                oldSelectedProject.querySelector('.project-icon').innerHTML = this.#projectIconSVG;
+            }
         }
 
         const newSelectedProject = document.querySelector(`[data-id="${project.name}"]`);
         newSelectedProject.classList.add('selected');
-        newSelectedProject.querySelector('.project-icon').innerHTML = this.#projectSelectedIconSVG;
+        if(!project.isSpecial) {
+            newSelectedProject.querySelector('.project-icon').innerHTML = this.#projectSelectedIconSVG;
+        }
     }
 
     createSpecialListItem(special, isSelected = false) {

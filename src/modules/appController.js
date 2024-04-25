@@ -35,7 +35,11 @@ export default class AppController {
 
         this.#selectedProject = project;
         this.#domController.selectProject(project);
-        this.reloadTodos(project);
+
+        // W.I.P.
+        if (!project.isSpecial) {
+            this.reloadTodos(project);
+        }
     }
 
     addProject(name) {
@@ -191,11 +195,27 @@ export default class AppController {
         this.loadProjects();
     }
 
+    activateSpecial(specialItem) {
+        const specialButton = specialItem.querySelector('.special-button');
+        const specialName = specialButton.querySelector('.special-name').textContent;
+        const specialProject = { name: specialName, isSpecial: true };
+        
+        specialButton.addEventListener('click', this.selectProject.bind(this, specialProject));
+    }
+
+    activateSpecials() {
+        const specialItems = this.#specialsContainer.querySelectorAll('.special-item');
+        specialItems.forEach(specialItem => {
+            this.activateSpecial(specialItem);
+        });
+    }
+
     loadSpecials() {
         const specials = ['Inbox', 'Today', 'This week'];
         const specialList = this.#domController.createSpecialList(specials, this.#selectedProject, 'specialList');
 
         this.#specialsContainer.appendChild(specialList);
+        this.activateSpecials();
     }
 
     // Todos
