@@ -36,9 +36,9 @@ export default class AppController {
         this.#selectedProject = project;
         this.#domController.selectProject(project);
 
-        // W.I.P.
-        if (!project.isSpecial) {
+        if (!project.isSpecial || !project.isDynamic) {
             this.reloadTodos(project);
+            return;
         }
     }
 
@@ -177,7 +177,8 @@ export default class AppController {
         const projectListHeader = this.#domController.createProjectListHeader();
 
         const projects = AppController.convertObjectToArray(this.#todoController.projects);
-        const projectList = this.#domController.createProjectList(projects, this.#selectedProject);
+        const filteredProjects = projects.filter((project) => !project.isSpecial);
+        const projectList = this.#domController.createProjectList(filteredProjects, this.#selectedProject);
 
         this.#projectsContainer.appendChild(projectCreator);
         this.#projectsContainer.appendChild(projectListHeader);
@@ -198,7 +199,26 @@ export default class AppController {
     activateSpecial(specialItem) {
         const specialButton = specialItem.querySelector('.special-button');
         const specialName = specialButton.querySelector('.special-name').textContent;
-        const specialProject = { name: specialName, isSpecial: true };
+        let specialProject;
+
+        switch(specialName) {
+            case 'Inbox': {
+                specialProject = this.#todoController.getProject(specialName);
+                specialProject.isDynamic = false;
+                break;
+            }
+
+            case 'Today':
+            case 'This week': {
+                specialProject = { 
+                    name: specialName,
+                    isDynamic: true
+                };
+                break;
+            }
+        }
+
+        specialProject.isSpecial = true;
         
         specialButton.addEventListener('click', this.selectProject.bind(this, specialProject));
     }
@@ -212,8 +232,10 @@ export default class AppController {
 
     loadSpecials() {
         const specials = ['Inbox', 'Today', 'This week'];
-        const specialList = this.#domController.createSpecialList(specials, this.#selectedProject, 'specialList');
 
+        this.#todoController.addProject('Inbox');
+
+        const specialList = this.#domController.createSpecialList(specials, this.#selectedProject, 'specialList');
         this.#specialsContainer.appendChild(specialList);
         this.activateSpecials();
     }
