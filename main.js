@@ -1720,7 +1720,7 @@ class AppController {
 
     loadProject(project) {
         const newProjectItem = this.#domController.createProjectListItem(project);
-        this.#projectsContainer.querySelector('#projectListContainer').appendChild(newProjectItem);
+        this.#projectsContainer.querySelector('#projectList').appendChild(newProjectItem);
         this.activateProject(newProjectItem);
     }
 
