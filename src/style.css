@@ -220,9 +220,11 @@ body {
     &:hover {
         filter: brightness(1.15);
     }
-
     &.completed {
         opacity: 0.4;
+    }
+    &.overdue {
+       background-color: rgb(119, 79, 89); 
     }
 }
 

@@ -166,17 +166,19 @@ export default class DOMController {
 
     createTodoCard(todo) {
         const todoCard = document.createElement('li');
+        const dueDate = new Date(todo.dueDate);
+        const currentDate = new Date();
+        const isOverdue = (dueDate.getTime() - currentDate.getTime()) < 0;
+
         todoCard.dataset.id = todo.title;
         todoCard.dataset.parentProject = todo.parentProject;
 
         todoCard.classList.add('todo-card');
         if(todo.isCompleted) {
             todoCard.classList.add('completed');
+        } else if(isOverdue) {
+            todoCard.classList.add('overdue');
         }
-
-        const dueDate = new Date(todo.dueDate);
-        const currentDate = new Date();
-        const isOverdue = (dueDate.getTime() - currentDate.getTime()) < 0;
 
         todoCard.innerHTML = `
             <div class="todo-checkbox"> 
