@@ -132,15 +132,24 @@ export default class AppController {
     openProjectCreator(mode = 'add', event) {
         const CREATOR_ID = 'projectCreator';
         const projectCreator = document.querySelector(`#${CREATOR_ID}`);
+        const creatorHeader = projectCreator.querySelector(`#${CREATOR_ID}Header`);
         const createOption = projectCreator.querySelector(`#${CREATOR_ID}Create`);
 
         createOption.dataset.mode = mode;
 
         if(mode === 'edit') {
+            creatorHeader.textContent = 'Edit project';
+
             const projectButton = event.currentTarget.parentElement.parentElement;
             const originalName = projectButton.dataset.id;
+
             projectCreator.querySelector('#projectNameInput').value = originalName;
             createOption.dataset.originalName = originalName;
+            createOption.textContent = 'Edit';
+
+        } else {
+            creatorHeader.textContent = 'Create a new project';
+            createOption.textContent = 'Create';
         }
 
         projectCreator.showModal();
@@ -390,11 +399,14 @@ export default class AppController {
 
         const CREATOR_ID = 'todoCreator';
         const todoCreator = document.querySelector(`#${CREATOR_ID}`);
+        const creatorHeader = todoCreator.querySelector(`#${CREATOR_ID}Header`);
         const createOption = todoCreator.querySelector(`#${CREATOR_ID}Create`);
 
         createOption.dataset.mode = mode;
 
         if(mode === 'edit') {
+            creatorHeader.textContent = 'Edit todo';
+
             const todoCard = event.currentTarget.parentElement.parentElement;
             const originalTitle = todoCard.dataset.id;
 
@@ -407,6 +419,11 @@ export default class AppController {
             todoCreator.querySelector('#todoPriorityInput').value = originalTodo.priority;
 
             createOption.dataset.originalTitle = originalTitle;
+            createOption.textContent = 'Edit';
+
+        } else {
+            creatorHeader.textContent = 'Create a new todo';
+            createOption.textContent = 'Create';
         }
 
         todoCreator.showModal();
