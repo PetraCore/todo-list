@@ -168,7 +168,11 @@ export default class DOMController {
         const todoCard = document.createElement('li');
         todoCard.dataset.id = todo.title;
         todoCard.dataset.parentProject = todo.parentProject;
+
         todoCard.classList.add('todo-card');
+        if(todo.isCompleted) {
+            todoCard.classList.add('completed');
+        }
 
         const dueDate = new Date(todo.dueDate);
         const currentDate = new Date();

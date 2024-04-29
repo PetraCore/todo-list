@@ -220,6 +220,10 @@ body {
     &:hover {
         filter: brightness(1.15);
     }
+
+    &.completed {
+        opacity: 0.4;
+    }
 }
 
 .todo-title,
