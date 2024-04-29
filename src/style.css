@@ -212,7 +212,7 @@ body {
     grid-template: 
         1fr /
         min-content repeat(2, fit-content(100%))
-        minmax(max-content, 1fr) max-content min-content
+        minmax(max-content, 1fr) min-content
     ;
     align-items: center;
     gap: 24px;
@@ -225,6 +225,18 @@ body {
     }
     &.overdue {
        background-color: rgb(119, 79, 89); 
+    }
+}
+
+.todo-checkbox {
+    &.priority-low {
+        color: rgb(137 209 201);
+    }
+    &.priority-medium {
+        color: rgb(241 203 136);
+    }
+    &.priority-high {
+        color: rgb(233 148 148);
     }
 }
 
