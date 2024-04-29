@@ -1,6 +1,6 @@
 import TodoController from "./todoController";
 import DOMController from "./DOMController";
-import { add, format } from "date-fns";
+import { add, lightFormat } from "date-fns";
 
 // The purpose of this module is to integrate DOMController and TodoController 
 // while preventing them from becoming too closely coupled.
@@ -549,11 +549,11 @@ export default class AppController {
         const dateFormat = 'yyyy-MM-dd'
         const currentDate = new Date();
 
-        const today = format(currentDate, dateFormat) ;
-        const yesterday = format(add(currentDate, {days: -1}), dateFormat);
-        const tomorrow = format(add(currentDate, {days: 1}), dateFormat);
-        const inAWeek = format(add(currentDate, {weeks: 1}), dateFormat);
-        const inAMonth = format(add(currentDate, {months: 1}), dateFormat);
+        const today = lightFormat(currentDate, dateFormat) ;
+        const yesterday = lightFormat(add(currentDate, {days: -1}), dateFormat);
+        const tomorrow = lightFormat(add(currentDate, {days: 1}), dateFormat);
+        const inAWeek = lightFormat(add(currentDate, {weeks: 1}), dateFormat);
+        const inAMonth = lightFormat(add(currentDate, {months: 1}), dateFormat);
 
         const chores = this.#todoController.addProject('Chores');
         const programming = this.#todoController.addProject('Programming');
