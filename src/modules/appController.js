@@ -526,7 +526,7 @@ export default class AppController {
         const addTodoButton = this.#todosContainer.querySelector('#addTodoButton');
         const todoCards = this.#todosContainer.querySelectorAll('.todo-card');
 
-        addTodoButton.addEventListener('click', this.openTodoCreator.bind(this, 'add'));
+        addTodoButton?.addEventListener('click', this.openTodoCreator.bind(this, 'add'));
 
         todoCards.forEach(todoCard => {
             this.activateTodo(todoCard);
