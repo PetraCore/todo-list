@@ -149,6 +149,7 @@ export default class AppController {
 
         } else {
             creatorHeader.textContent = 'Create a new project';
+            projectCreator.querySelector('#projectNameInput').value = '';
             createOption.textContent = 'Create';
         }
 
@@ -423,6 +424,15 @@ export default class AppController {
 
         } else {
             creatorHeader.textContent = 'Create a new todo';
+
+            const currentDate = new Date();
+            const tomorrow = lightFormat(add(currentDate, {days: 1}), 'yyyy-MM-dd');
+
+            todoCreator.querySelector('#todoTitleInput').value = '';
+            todoCreator.querySelector('#todoDescriptionInput').value = '';
+            todoCreator.querySelector('#todoDueDateInput').value = tomorrow;
+            todoCreator.querySelector('#todoPriorityInput').value = 'medium';
+
             createOption.textContent = 'Create';
         }
 
