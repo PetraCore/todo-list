@@ -40,6 +40,19 @@ export default class AppController {
             this.reloadTodos(project);
             return;
         }
+
+        switch(project.name) {
+            case 'Today': {
+                this.reloadTodos(project, 1);
+                break;
+            }
+
+            case 'This week': {
+                this.reloadTodos(project, 7);
+                break;
+            }
+        }
+
     }
 
     addProject(name) {
@@ -235,7 +248,11 @@ export default class AppController {
 
         this.#todoController.addProject('Inbox');
 
-        const specialList = this.#domController.createSpecialList(specials, this.#selectedProject, 'specialList');
+        const specialList = this.#domController.createSpecialList(
+            specials,
+            this.#selectedProject,
+            'specialList'
+        );
         this.#specialsContainer.appendChild(specialList);
         this.activateSpecials();
     }
@@ -255,7 +272,10 @@ export default class AppController {
     }
 
     editTodo(todoTitle, newTodo) {
-        const editedTodo = this.#selectedProject.editTodo(todoTitle, newTodo);
+        const todoCard = this.#todosContainer.querySelector(`[data-id="${todoTitle}"]`);
+        const parentProject = this.#todoController.getProject(todoCard.dataset.parentProject);
+
+        const editedTodo = parentProject.editTodo(todoTitle, newTodo);
         if(editedTodo) {
             this.updateTodo(todoTitle, editedTodo);
         }
@@ -264,16 +284,18 @@ export default class AppController {
     deleteTodo(todoTitle, event) {
         event.stopPropagation();
 
-        const todo = this.#selectedProject.getTodo(todoTitle);
+        const todoCard = this.#todosContainer.querySelector(`[data-id="${todoTitle}"]`);
+        const parentProject = this.#todoController.getProject(todoCard.dataset.parentProject);
+        const todo = parentProject.getTodo(todoTitle);
+
         if(!todo) {
             console.error(
                 `Cannot delete todo: Could not find todo "${todoTitle}" in selected project"`
             );
             return;
         }
-        this.#selectedProject.deleteTodo(todoTitle);
+        parentProject.deleteTodo(todoTitle);
 
-        const todoCard = this.#todosContainer.querySelector(`[data-id="${todoTitle}"]`) 
         if (todoCard.dataset.isShowingDetails === 'true') {
             this.unloadTodoDetails(todoCard);
         }
@@ -283,7 +305,10 @@ export default class AppController {
     toggleTodoCompletion(todoTitle, event) {
         event.stopPropagation()
 
-        const todo = this.#selectedProject.getTodo(todoTitle);
+        const todoCard = this.#todosContainer.querySelector(`[data-id="${todoTitle}"]`);
+        const parentProject = this.#todoController.getProject(todoCard.dataset.parentProject);
+        const todo = parentProject.getTodo(todoTitle);
+
         todo.toggleCompletion();
         this.updateTodo(todoTitle, todo);
     }
@@ -371,7 +396,9 @@ export default class AppController {
         if(mode === 'edit') {
             const todoCard = event.currentTarget.parentElement.parentElement;
             const originalTitle = todoCard.dataset.id;
-            const originalTodo = this.#selectedProject.getTodo(originalTitle);
+
+            const parentProject = this.#todoController.getProject(todoCard.dataset.parentProject);
+            const originalTodo = parentProject.getTodo(originalTitle);
 
             todoCreator.querySelector('#todoTitleInput').value = originalTodo.title;
             todoCreator.querySelector('#todoDescriptionInput').value =  originalTodo.description;
@@ -386,7 +413,8 @@ export default class AppController {
 
     loadTodoDetails(todoCard) {
         const todoTitle = todoCard.dataset.id;
-        const todo = this.#selectedProject.getTodo(todoTitle);
+        const parentProject = this.#todoController.getProject(todoCard.dataset.parentProject);
+        const todo = parentProject.getTodo(todoTitle);
         const todoDetails = this.#domController.createTodoDetails(todo);
 
         todoCard.dataset.isShowingDetails = true;
@@ -437,12 +465,41 @@ export default class AppController {
         }
     }
 
-    loadTodos(project = this.#selectedProject) {
+    filterTodos(todos, timeDistance = null) {
+        return todos.filter((todo) => {
+            if(todo.isCompleted) {
+                return false;
+            }
+            if(!timeDistance) {
+                return true;
+            }
+
+            const currentDate = new Date();
+            const dueDate = new Date(todo.dueDate);
+            const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
+            const timeLeftInDays = (dueDate.getTime() - currentDate.getTime()) / MILLISECONDS_PER_DAY;
+
+            return timeLeftInDays <= timeDistance;
+        });
+    }
+
+    loadTodos(project = this.#selectedProject, timeDistance = null) {
         const todoCreator = this.createTodoCreator();
         const todoListHeader = this.#domController.createTodoListHeader(project);
 
-        const todos = AppController.convertObjectToArray(project.todos);
-        const todoList = this.#domController.createTodoList(todos);
+        const todos = project.isDynamic 
+        ?   this.#todoController.getAllTodosArray()  
+        :   AppController.convertObjectToArray(project.todos);
+
+        let todoList;
+
+        if(timeDistance) {
+            const filteredTodos = this.filterTodos(todos, timeDistance);
+            todoList = this.#domController.createTodoList(filteredTodos);
+
+        } else {
+            todoList = this.#domController.createTodoList(todos);
+        }
 
         this.#todosContainer.appendChild(todoCreator);
         this.#todosContainer.appendChild(todoListHeader);
@@ -480,9 +537,9 @@ export default class AppController {
         this.#todosContainer.innerHTML = '';
     }
 
-    reloadTodos(project = this.#selectedProject) {
+    reloadTodos(project = this.#selectedProject, timeDistance = null) {
         this.unloadTodos();
-        this.loadTodos(project);
+        this.loadTodos(project, timeDistance);
     }
 
     // App miscellaneous

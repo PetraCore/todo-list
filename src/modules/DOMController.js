@@ -131,7 +131,7 @@ export default class DOMController {
         specialList.classList.add('special-list');
 
         specials.forEach(special => {
-            const isSelected = selectedProject.name === special;
+            const isSelected = selectedProject?.name === special;
             const projectListItem = this.createSpecialListItem(special, isSelected);
             specialList.appendChild(projectListItem);
         }); 
@@ -150,9 +150,11 @@ export default class DOMController {
             <h1 class="project-name option-container">
                 ${project.name}
                 <ul class="options">
-                    <li class="option" id="addTodoButton">
-                        ${this.#todoOptionAddSVG}
-                    </li>
+                ${
+                    project.isDynamic
+                    ? ''
+                    : `<li class="option" id="addTodoButton">${this.#todoOptionAddSVG}</li>`
+                }
                 </ul>
             </h1>
         `;
@@ -163,6 +165,7 @@ export default class DOMController {
     createTodoCard(todo) {
         const todoCard = document.createElement('li');
         todoCard.dataset.id = todo.title;
+        todoCard.dataset.parentProject = todo.parentProject;
         todoCard.classList.add('todo-card');
 
         todoCard.innerHTML = `

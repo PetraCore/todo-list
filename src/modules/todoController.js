@@ -9,6 +9,23 @@ export default class TodoController {
         return this.projects[projectName];
     }
 
+    getProjectsArray() {
+        const projectsArray = [];
+        for (const projectID in this.projects) {
+            projectsArray.push(this.projects[projectID]);
+        }
+        return projectsArray;
+    }
+
+    getAllTodosArray() {
+        let todosArray = [];
+        const projects = this.getProjectsArray();
+        projects.forEach((project) => {
+            todosArray = todosArray.concat(project.getTodosArray());
+        });
+        return todosArray;
+    }
+    
     addProject(name) {
         if (this.getProject(name)) {
             console.error(`Cannot add project: Project with this name ("${name}") already exists!`);

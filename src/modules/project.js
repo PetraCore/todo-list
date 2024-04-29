@@ -13,12 +13,22 @@ export default class Project {
         }
 
         const newTodo = new Todo(title, description, dueDate, priority);
+        newTodo.parentProject = this.name;
         this.todos[title] = newTodo;
+
         return newTodo;
     }
 
     getTodo(todoTitle) {
         return this.todos[todoTitle];
+    }
+
+    getTodosArray() {
+        const todosArray = [];
+        for (const todoID in this.todos) {
+            todosArray.push(this.todos[todoID]);
+        }
+        return todosArray;
     }
 
     deleteTodo(todoTitle) {
