@@ -1,4 +1,4 @@
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, lightFormat } from "date-fns";
 
 export default class DOMController {
     #projectIconSVG = '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="white" d="M10 4H4c-1.11 0-2 .89-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8z"/></svg>';
@@ -247,7 +247,7 @@ export default class DOMController {
                 todo.dueDate
                 ? '<div class="detail-item">'
                     + '<div class="detail-name">Due date:</div>' 
-                    + `<div class="detail-value">${todo.dueDate}</div>`
+                    + `<div class="detail-value">${lightFormat(todo.dueDate, 'yyyy-MM-dd HH:mm')}</div>`
                 + '</div>'
                 : ''
             }

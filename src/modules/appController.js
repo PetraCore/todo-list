@@ -372,7 +372,7 @@ export default class AppController {
             'textarea', 'todoDescription', 'Description:'
         );
         const todoDueDateField = this.#domController.createCreatorField(
-            'date', 'todoDueDate', 'Due date:'
+            'datetime-local', 'todoDueDate', 'Due date:'
         );
         const todoPriorityField = this.#domController.createCreatorField(
             'select', 'todoPriority', 'Priority:',
@@ -426,7 +426,7 @@ export default class AppController {
             creatorHeader.textContent = 'Create a new todo';
 
             const currentDate = new Date();
-            const tomorrow = lightFormat(add(currentDate, {days: 1}), 'yyyy-MM-dd');
+            const tomorrow = lightFormat(add(currentDate, {days: 1}), "yyyy-MM-dd'T'HH:mm");
 
             todoCreator.querySelector('#todoTitleInput').value = '';
             todoCreator.querySelector('#todoDescriptionInput').value = '';
@@ -573,7 +573,7 @@ export default class AppController {
     // App miscellaneous
 
     loadSampleData() {
-        const dateFormat = 'yyyy-MM-dd'
+        const dateFormat = "yyyy-MM-dd'T'HH:mm";
         const currentDate = new Date();
 
         const today = lightFormat(currentDate, dateFormat) ;
