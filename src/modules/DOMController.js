@@ -267,7 +267,7 @@ export default class DOMController {
                 todo.completionDate
                 ? '<div class="detail-item">'
                     + '<div class="detail-name">Completion date:</div>' 
-                    + `<div class="detail-value">${todo.completionDate}</div>`
+                    + `<div class="detail-value">${lightFormat(todo.completionDate, 'yyyy-MM-dd HH:mm')}</div>`
                 + '</div>'
                 : ''
             }

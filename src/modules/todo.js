@@ -14,7 +14,7 @@ export default class Todo {
             this.completionDate = null;
         } else {
             this.isCompleted = true;
-            this.completionDate = 'WIP';
+            this.completionDate = new Date();
         }
     }
 }
