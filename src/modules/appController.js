@@ -78,8 +78,7 @@ export default class AppController {
     deleteProject(name) {
         const project = this.#todoController.getProject(name);
         if (project === this.#selectedProject) {
-            this.#selectedProject = null;
-            this.unloadTodos();
+            this.selectProject(this.#todoController.getProject('Inbox'));
         }
         this.#todoController.deleteProject(name);
         this.#projectsContainer.querySelector(`[data-id="${name}"]`).remove();
