@@ -61,6 +61,7 @@ export default class AppController {
         if(newProject) {
             this.loadProject(newProject);
         }
+        this.syncProjectsData();
     }
     
     editProject(name, newName) {
@@ -70,6 +71,7 @@ export default class AppController {
         const editedProject = this.#todoController.editProject(name, newName);
         if(editedProject) {
             this.updateProject(name, editedProject);
+            this.syncProjectsData();
         }
     }
 
@@ -81,6 +83,7 @@ export default class AppController {
         }
         this.#todoController.deleteProject(name);
         this.#projectsContainer.querySelector(`[data-id="${name}"]`).remove();
+        this.syncProjectsData();
     }
 
     handleProjectCreator(event) {
@@ -279,6 +282,7 @@ export default class AppController {
         );
         if(newTodo) {
             this.loadTodo(newTodo);
+            this.syncProjectsData();
         }
     }
 
@@ -289,6 +293,7 @@ export default class AppController {
         const editedTodo = parentProject.editTodo(todoTitle, newTodo);
         if(editedTodo) {
             this.updateTodo(todoTitle, editedTodo);
+            this.syncProjectsData();
         }
     }
 
@@ -311,6 +316,7 @@ export default class AppController {
             this.unloadTodoDetails(todoCard);
         }
         todoCard.remove();
+        this.syncProjectsData();
     }
 
     toggleTodoCompletion(todoTitle, event) {
@@ -322,6 +328,7 @@ export default class AppController {
 
         todo.toggleCompletion();
         this.updateTodo(todoTitle, todo);
+        this.syncProjectsData();
     }
 
     handleTodoCreator(event) {
@@ -512,6 +519,10 @@ export default class AppController {
     }
 
     loadTodos(project = this.#selectedProject, timeDistance = null) {
+        if(!project) {
+            return;
+        }
+
         const todoCreator = this.createTodoCreator();
         const todoListHeader = this.#domController.createTodoListHeader(project);
 
@@ -601,12 +612,28 @@ export default class AppController {
         annoyingProject.addTodo('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', inAMonth, 'medium');
 
         this.#selectedProject = programming;
+        this.syncProjectsData();
+    }
+
+    loadSavedProjectsData() {
+        const projectsData = localStorage.getItem('projectsData');
+        this.#todoController.loadProjectsFromJSON(projectsData);
+    }
+
+    syncProjectsData() {
+        localStorage.setItem('projectsData', JSON.stringify(this.#todoController.projects));
     }
 
     initializeApp() {
-        this.loadSampleData();
         this.loadSpecials();
+
+        if(!localStorage.getItem('projectsData')) {
+            this.loadSampleData();
+        } else {
+            this.loadSavedProjectsData();
+        }
+
         this.loadProjects();
-        this.loadTodos();
+        this.selectProject(this.#todoController.getProject('Inbox'));
     }
 }

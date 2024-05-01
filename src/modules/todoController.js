@@ -59,4 +59,30 @@ export default class TodoController {
 
         return project;
     }
+
+    loadProjectsFromJSON(projectsJSON) {
+        const projects = JSON.parse(projectsJSON);
+
+        for (const projectID in projects) {
+            const loadedProject = projects[projectID];
+
+            let newProject = this.getProject(loadedProject.name);
+            if (!newProject) {
+                newProject = this.addProject(loadedProject.name);
+            }
+
+            const todos = loadedProject.todos;
+            for (const todoID in todos) {
+                const todo = todos[todoID];
+                newProject.addTodo(
+                    todo.title,
+                    todo.description,
+                    todo.dueDate,
+                    todo.priority,
+                    todo.isCompleted,
+                    todo.completionDate
+                );
+            }
+        }
+    }
 }

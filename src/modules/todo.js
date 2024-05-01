@@ -1,11 +1,25 @@
 export default class Todo {
-    constructor(title, description, dueDate, priority) { 
+    constructor(
+        title,
+        description,
+        dueDate,
+        priority,
+        isCompleted = false,
+        completionDate = null
+    ) { 
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;
         this.priority = priority;
-        this.isCompleted = false;
-        this.completionDate = null; 
+
+        if(!isCompleted) {
+            return;
+        }
+        this.isCompleted = true;
+
+        if(Object.prototype.toString.call(completionDate) === '[object Date]') {
+            this.completionDate = completionDate;
+        }
     }
 
     toggleCompletion() {

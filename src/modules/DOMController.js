@@ -71,7 +71,7 @@ export default class DOMController {
         projectList.classList.add('project-list');
 
         projects.forEach(project => {
-            const isSelected = selectedProject.name === project.name;
+            const isSelected = selectedProject?.name === project.name;
             const projectListItem = this.createProjectListItem(project, isSelected);
             projectList.appendChild(projectListItem);
         }); 
