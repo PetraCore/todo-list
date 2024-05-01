@@ -13,11 +13,16 @@ export default class Todo {
         this.priority = priority;
 
         if(!isCompleted) {
+            this.isCompleted = false;
             return;
         }
         this.isCompleted = true;
 
-        if(Object.prototype.toString.call(completionDate) === '[object Date]') {
+        completionDate = new Date(Date.parse(completionDate));
+
+        if(isNaN(completionDate)) {
+            this.completionDate = null;
+        } else {
             this.completionDate = completionDate;
         }
     }
