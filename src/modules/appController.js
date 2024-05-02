@@ -611,7 +611,7 @@ export default class AppController {
 
         programming.addTodo('Finish TOP', 'Someday...', '', 'high');
         programming.addTodo('Complete Todo app', 'Make it c00l', today, 'medium').toggleCompletion();
-        programming.addTodo('Learn ADS', 'Gotta have good foundations', inAMonth, 'medium');
+        programming.addTodo('Learn DSA', 'Gotta have good foundations', inAMonth, 'medium');
 
         personal.addTodo('Call Joe', 'I hate that guy', yesterday, 'low');
         personal.addTodo('Schedule dentist appointment', 'Check availability for next week', inAWeek, 'medium');
